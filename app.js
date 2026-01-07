@@ -205,11 +205,122 @@ messageInput.addEventListener('input', () => {
 function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }
 
 function formatMessage(text) {
-    text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (m, lang, code) => `<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+    // Procesar bloques de código primero (para no procesarlos como markdown)
+    const codeBlocks = [];
+    text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (match, lang, code) => {
+        const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+        codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+        return placeholder;
+    });
+
+    // Procesar línea por línea
+    const lines = text.split('\n');
+    const processed = [];
+    let inList = false;
+    let listType = null;
+    let listItems = [];
+
+    const finishList = () => {
+        if (inList && listItems.length > 0) {
+            const tag = listType === 'ul' ? 'ul' : 'ol';
+            processed.push(`<${tag}>${listItems.join('')}</${tag}>`);
+            listItems = [];
+            inList = false;
+            listType = null;
+        }
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+
+        // Líneas horizontales
+        if (line.trim() === '---' || line.trim() === '***' || line.trim() === '___') {
+            finishList();
+            processed.push('<hr>');
+            continue;
+        }
+
+        // Encabezados
+        const h3Match = line.match(/^###\s+(.+)$/);
+        const h2Match = line.match(/^##\s+(.+)$/);
+        const h1Match = line.match(/^#\s+(.+)$/);
+
+        if (h3Match) {
+            finishList();
+            processed.push(`<h3>${h3Match[1]}</h3>`);
+            continue;
+        } else if (h2Match) {
+            finishList();
+            processed.push(`<h2>${h2Match[1]}</h2>`);
+            continue;
+        } else if (h1Match) {
+            finishList();
+            processed.push(`<h1>${h1Match[1]}</h1>`);
+            continue;
+        }
+
+        // Listas desordenadas
+        const ulMatch = line.match(/^[-*]\s+(.+)$/);
+        if (ulMatch) {
+            if (!inList || listType !== 'ul') {
+                finishList();
+                inList = true;
+                listType = 'ul';
+            }
+            listItems.push(`<li>${ulMatch[1]}</li>`);
+            continue;
+        }
+
+        // Listas ordenadas
+        const olMatch = line.match(/^\d+\.\s+(.+)$/);
+        if (olMatch) {
+            if (!inList || listType !== 'ol') {
+                finishList();
+                inList = true;
+                listType = 'ol';
+            }
+            listItems.push(`<li>${olMatch[1]}</li>`);
+            continue;
+        }
+
+        // Si llegamos aquí y estábamos en una lista, terminarla
+        if (inList && line.trim() !== '') {
+            finishList();
+        }
+
+        // Línea vacía
+        if (line.trim() === '') {
+            finishList();
+            if (processed.length > 0 && processed[processed.length - 1] !== '<br>') {
+                processed.push('<br>');
+            }
+            continue;
+        }
+
+        // Línea normal
+        processed.push(line);
+    }
+
+    // Terminar lista si quedó abierta
+    finishList();
+
+    // Unir todo
+    text = processed.join('\n');
+
+    // Restaurar bloques de código
+    codeBlocks.forEach((block, i) => {
+        text = text.replace(`__CODE_BLOCK_${i}__`, block);
+    });
+
+    // Procesar inline code, negritas y cursivas
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
     text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
     text = text.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    return text.replace(/\n/g, '<br>');
+
+    // Convertir saltos de línea simples
+    text = text.replace(/\n/g, '<br>');
+
+    return text;
 }
 
 function createMessageElement(role, content) {
@@ -246,7 +357,12 @@ function showToast(msg) {
     setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2000);
 }
 
-function scrollToBottom() { chatMessages.scrollTop = chatMessages.scrollHeight; }
+function scrollToBottom() {
+    chatMessages.scrollTo({
+        top: chatMessages.scrollHeight,
+        behavior: 'smooth'
+    });
+}
 
 // ===== API =====
 async function sendMessage(userMessage) {
