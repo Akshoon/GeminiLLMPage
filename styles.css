@@ -574,6 +574,27 @@ body {
     padding: 1.5rem 2rem;
 }
 
+/* Pantallas medianas (tablets) */
+@media (min-width: 768px) and (max-width: 1279px) {
+    .chat-container {
+        max-width: 900px;
+    }
+}
+
+/* Pantallas grandes (desktop) */
+@media (min-width: 1280px) {
+    .chat-container {
+        max-width: 1100px;
+    }
+}
+
+/* Pantallas muy grandes */
+@media (min-width: 1600px) {
+    .chat-container {
+        max-width: 1400px;
+    }
+}
+
 .chat-messages {
     flex: 1;
     display: flex;
@@ -969,6 +990,31 @@ body {
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Responsive widths para input y disclaimer */
+@media (min-width: 768px) and (max-width: 1279px) {
+
+    .input-wrapper-main,
+    .disclaimer {
+        max-width: 900px;
+    }
+}
+
+@media (min-width: 1280px) {
+
+    .input-wrapper-main,
+    .disclaimer {
+        max-width: 1100px;
+    }
+}
+
+@media (min-width: 1600px) {
+
+    .input-wrapper-main,
+    .disclaimer {
+        max-width: 1400px;
+    }
 }
 
 /* ===== Error Message ===== */
