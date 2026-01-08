@@ -358,9 +358,8 @@ function showToast(msg) {
 }
 
 function scrollToBottom() {
-    chatMessages.scrollTo({
-        top: chatMessages.scrollHeight,
-        behavior: 'smooth'
+    requestAnimationFrame(() => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     });
 }
 

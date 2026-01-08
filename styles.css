@@ -787,7 +787,7 @@ body {
 .message-content h2,
 .message-content h3 {
     font-weight: 600;
-    margin: 1.25rem 0 0.75rem 0;
+    margin: 0.5rem 0 0.25rem 0;
     line-height: 1.3;
     color: inherit;
 }
@@ -801,13 +801,13 @@ body {
 .message-content h1 {
     font-size: 1.5rem;
     border-bottom: 2px solid var(--border);
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
 }
 
 .message-content h2 {
     font-size: 1.25rem;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 0.35rem;
+    padding-bottom: 0.25rem;
 }
 
 .message-content h3 {
@@ -822,7 +822,7 @@ body {
 .message-content hr {
     border: none;
     border-top: 2px solid var(--border);
-    margin: 1.5rem 0;
+    margin: 0.75rem 0;
 }
 
 .message.user .message-content hr {
@@ -831,7 +831,7 @@ body {
 
 .message-content ul,
 .message-content ol {
-    margin: 0.75rem 0;
+    margin: 0.35rem 0;
     padding-left: 2rem;
 }
 
@@ -844,7 +844,7 @@ body {
 }
 
 .message-content li {
-    margin: 0.35rem 0;
+    margin: 0.15rem 0;
     line-height: 1.6;
 }
 
@@ -852,11 +852,11 @@ body {
 .message-content ol ul,
 .message-content ul ol,
 .message-content ol ol {
-    margin: 0.25rem 0;
+    margin: 0.15rem 0;
 }
 
 .message-content p {
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
 }
 
 .message-content p:first-child {
