@@ -18,6 +18,7 @@ const quickPrompts = document.querySelectorAll('.quick-prompt');
 const sidebar = document.getElementById('sidebar');
 const toggleSidebar = document.getElementById('toggle-sidebar');
 const newChatBtn = document.getElementById('new-chat-btn');
+const scrollToBottomBtn = document.getElementById('scroll-to-bottom-btn');
 
 // ===== State =====
 let conversationHistory = [];
@@ -426,6 +427,19 @@ async function sendMessage(userMessage) {
 sendBtn.addEventListener('click', () => sendMessage(messageInput.value));
 messageInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(messageInput.value); } });
 quickPrompts.forEach(btn => btn.addEventListener('click', () => { const p = btn.dataset.prompt; messageInput.value = p; sendBtn.disabled = false; sendMessage(p); }));
+
+// ===== Scroll to Bottom Button =====
+function checkScrollPosition() {
+    const isNearBottom = chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 100;
+    if (isNearBottom) {
+        scrollToBottomBtn.classList.remove('show');
+    } else {
+        scrollToBottomBtn.classList.add('show');
+    }
+}
+
+chatMessages.addEventListener('scroll', checkScrollPosition);
+scrollToBottomBtn.addEventListener('click', scrollToBottom);
 
 // ===== Init =====
 loadSettings();
